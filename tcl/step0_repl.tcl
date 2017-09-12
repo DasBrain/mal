@@ -1,33 +1,35 @@
-source mal_readline.tcl
+namespace eval ::mal {}
 
-proc READ str {
-    return $str
+proc ::mal::read {str} {
+	return $str
 }
 
-proc EVAL {ast env} {
-    return $ast
+proc ::mal::eval {ast env} {
+	return $ast
 }
 
-proc PRINT exp {
-    return $exp
+proc ::mal::print {exp} {
+	return $exp
 }
 
-proc REP str {
-    PRINT [EVAL [READ $str] {}]
+proc ::mal::rep {str} {
+	return [print [eval [read $str] {}]]
 }
 
-fconfigure stdout -translation binary
-
-# repl loop
-while {true} {
-    set res [_readline "user> "]
-    if {[lindex $res 0] == "EOF"} {
-        break
-    }
-    set line [lindex $res 1]
-    if {$line == ""} {
-        continue
-    }
-    puts [REP $line]
+proc ::mal::prompt {} {
+		puts -nonewline "user> "
+		flush stdout
+		set input [gets stdin]
+		if {[eof stdin]} {
+			return -code break
+		}
+		return $input
 }
-puts ""
+
+proc ::mal::main {argv} {
+	while {true} {
+		puts [rep [prompt]]
+	}
+}
+
+::mal::main $::argv
